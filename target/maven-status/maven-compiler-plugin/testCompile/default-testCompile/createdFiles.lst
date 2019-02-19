@@ -1,0 +1,5 @@
+eric\ticketsystem\util\UtilityTest.class
+eric\ticketsystem\service\TicketServiceIT.class
+eric\ticketsystem\comparator\SeatComparatorTest.class
+eric\ticketsystem\service\TicketServiceTest.class
+eric\ticketsystem\repository\VenueRepositoryTest.class

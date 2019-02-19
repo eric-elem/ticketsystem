@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Seat.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ticketsystem</a> &gt; <a href="index.source.html" class="el_package">eric.ticketsystem.model</a> &gt; <span class="el_source">Seat.java</span></div><h1>Seat.java</h1><pre class="source lang-java linenums">package eric.ticketsystem.model;
+
+public class Seat {
+	private int number;
+	private int quality;
+	private SeatStatus status;
+	public static final int QUALITY_BEST = 3;
+	public static final int QUALITY_BETTER = 2;
+	public static final int QUALITY_GOOD = 1;
+
+	public Seat(int number, int quality) {
+<span class="fc" id="L12">		super();</span>
+<span class="fc" id="L13">		this.number = number;</span>
+<span class="fc" id="L14">		this.quality = quality;</span>
+<span class="fc" id="L15">		this.status = SeatStatus.FREE;</span>
+<span class="fc" id="L16">	}</span>
+
+	public int getNumber() {
+<span class="fc" id="L19">		return number;</span>
+	}
+
+	public void setNumber(int number) {
+<span class="nc" id="L23">		this.number = number;</span>
+<span class="nc" id="L24">	}</span>
+
+	public int getQuality() {
+<span class="fc" id="L27">		return quality;</span>
+	}
+
+	public void setQuality(int quality) {
+<span class="fc" id="L31">		this.quality = quality;</span>
+<span class="fc" id="L32">	}</span>
+
+	public SeatStatus getStatus() {
+<span class="fc" id="L35">		return status;</span>
+	}
+
+	public void setStatus(SeatStatus status) {
+<span class="fc" id="L39">		this.status = status;</span>
+<span class="fc" id="L40">	}</span>
+
+	@Override
+	public String toString() {
+<span class="nc" id="L44">		return &quot;Seat [number=&quot; + number + &quot;, quality=&quot; + quality + &quot;, status=&quot; + status + &quot;]&quot;;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

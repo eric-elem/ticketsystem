@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VenueRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ticketsystem</a> &gt; <a href="index.source.html" class="el_package">eric.ticketsystem.repository.impl</a> &gt; <span class="el_source">VenueRepositoryImpl.java</span></div><h1>VenueRepositoryImpl.java</h1><pre class="source lang-java linenums">package eric.ticketsystem.repository.impl;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Random;
+
+import eric.ticketsystem.comparator.SeatComparator;
+import eric.ticketsystem.model.Reservation;
+import eric.ticketsystem.model.Seat;
+import eric.ticketsystem.model.SeatHold;
+import eric.ticketsystem.model.SeatStatus;
+import eric.ticketsystem.repository.VenueRepository;
+
+public class VenueRepositoryImpl implements VenueRepository {
+	PriorityQueue&lt;Seat&gt; seats;
+<span class="fc" id="L19">	Map&lt;Integer, SeatHold&gt; seatHolds = new HashMap&lt;Integer, SeatHold&gt;();</span>
+<span class="fc" id="L20">	Map&lt;String, Reservation&gt; reservations = new HashMap&lt;String, Reservation&gt;();</span>
+	int availableSeats;
+
+<span class="fc" id="L23">	public VenueRepositoryImpl(int numOfSeats) {</span>
+<span class="fc" id="L24">		seats = new PriorityQueue&lt;Seat&gt;(new SeatComparator());</span>
+<span class="fc" id="L25">		generateSeats(numOfSeats);</span>
+<span class="fc" id="L26">		availableSeats = numOfSeats;</span>
+<span class="fc" id="L27">	}</span>
+
+	public int getNumOfAvailableSeats() {
+<span class="fc" id="L30">		return availableSeats;</span>
+	}
+
+	public void saveSeatHold(SeatHold seatHold) {
+<span class="fc" id="L34">		int seatHoldId = generateSeatHoldId();</span>
+
+<span class="fc" id="L36">		seatHold.setId(seatHoldId);</span>
+<span class="fc" id="L37">		seatHolds.put(seatHoldId, seatHold);</span>
+<span class="fc" id="L38">		availableSeats -= seatHold.getSeats().size();</span>
+<span class="fc" id="L39">		triggerSeatHoldExpiration(seatHold);</span>
+<span class="fc" id="L40">	}</span>
+
+	private int generateSeatHoldId() {
+<span class="fc" id="L43">		Random random = new Random();</span>
+
+<span class="fc" id="L45">		int seatHoldId = random.nextInt(Integer.MAX_VALUE);</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">		while (seatHolds.containsKey(seatHoldId)) {</span>
+<span class="nc" id="L47">			seatHoldId = random.nextInt(Integer.MAX_VALUE);</span>
+		}
+
+<span class="fc" id="L50">		return seatHoldId;</span>
+	}
+
+	public List&lt;Seat&gt; getBestSeats(int numOfSeats) {
+<span class="fc" id="L54">		List&lt;Seat&gt; bestSeats = new LinkedList&lt;Seat&gt;();</span>
+
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		for (int i = 0; i &lt; numOfSeats; i++) {</span>
+<span class="fc" id="L57">			bestSeats.add(seats.poll());</span>
+		}
+
+<span class="fc" id="L60">		return bestSeats;</span>
+	}
+
+	private void generateSeats(int numOfSeats) {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		for (int i = 1; i &lt;= numOfSeats; i++) {</span>
+<span class="fc" id="L65">			Seat seat = null;</span>
+
+<span class="fc bfc" id="L67" title="All 2 branches covered.">			if (i % 5 == 0) {</span>
+<span class="fc" id="L68">				seat = new Seat(i, Seat.QUALITY_BETTER);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">			} else if (i % 9 == 0) {</span>
+<span class="fc" id="L70">				seat = new Seat(i, Seat.QUALITY_BEST);</span>
+			} else {
+<span class="fc" id="L72">				seat = new Seat(i, Seat.QUALITY_GOOD);</span>
+			}
+
+<span class="fc" id="L75">			seats.add(seat);</span>
+		}
+<span class="fc" id="L77">	}</span>
+
+	private String getReservationCode(SeatHold seatHold) {
+<span class="fc" id="L80">		String code = seatHold.getCustomerEmail().substring(0, 2) + seatHold.getId();</span>
+
+<span class="fc" id="L82">		return code;</span>
+	}
+
+	public SeatHold findSeatHold(int seatHoldId) {
+<span class="fc" id="L86">		SeatHold seatHold = null;</span>
+
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">		if (seatHolds.containsKey(seatHoldId)) {</span>
+<span class="fc" id="L89">			seatHold = seatHolds.get(seatHoldId);</span>
+		}
+
+<span class="fc" id="L92">		return seatHold;</span>
+	}
+
+	public void saveReservation(Reservation reservation) {
+<span class="fc" id="L96">		String code = getReservationCode(reservation.getSeatHold());</span>
+
+<span class="fc" id="L98">		reservation.setCode(code);</span>
+<span class="fc" id="L99">		reservations.put(code, reservation);</span>
+<span class="fc" id="L100">	}</span>
+
+	public Reservation findReservation(String reservationCode) {
+<span class="fc" id="L103">		Reservation reservation = null;</span>
+
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">		if (reservations.containsKey(reservationCode)) {</span>
+<span class="fc" id="L106">			reservation = reservations.get(reservationCode);</span>
+		}
+
+<span class="fc" id="L109">		return reservation;</span>
+	}
+
+	public void addSeats(List&lt;Seat&gt; changedSeats) {
+<span class="fc bfc" id="L113" title="All 2 branches covered.">		for (Seat seat : changedSeats) {</span>
+<span class="fc" id="L114">			seats.add(seat);</span>
+<span class="fc" id="L115">		}</span>
+<span class="fc" id="L116">	}</span>
+
+	private void triggerSeatHoldExpiration(final SeatHold seatHold) {
+<span class="fc" id="L119">		Thread handleExpiration = new Thread(new Runnable() {</span>
+
+			public void run() {
+				try {
+<span class="fc" id="L123">					Thread.sleep(seatHold.getDuration());</span>
+<span class="fc bfc" id="L124" title="All 4 branches covered.">					if (seatHold.getSeats().size() &gt; 0 &amp;&amp; seatHold.getSeats().get(0).getStatus() == SeatStatus.HELD) {</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">						for (Seat seat : seatHold.getSeats()) {</span>
+<span class="fc" id="L126">							seat.setStatus(SeatStatus.FREE);</span>
+<span class="fc" id="L127">							seats.remove(seat);</span>
+<span class="fc" id="L128">						}</span>
+<span class="fc" id="L129">						addSeats(seatHold.getSeats());</span>
+<span class="fc" id="L130">						availableSeats += seatHold.getSeats().size();</span>
+					}
+<span class="nc" id="L132">				} catch (InterruptedException e) {</span>
+<span class="nc" id="L133">					e.printStackTrace();</span>
+<span class="fc" id="L134">				}</span>
+
+<span class="fc" id="L136">			}</span>
+		});
+
+<span class="fc" id="L139">		handleExpiration.start();</span>
+<span class="fc" id="L140">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>

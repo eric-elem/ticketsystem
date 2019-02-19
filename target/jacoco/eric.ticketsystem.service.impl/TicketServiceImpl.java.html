@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TicketServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ticketsystem</a> &gt; <a href="index.source.html" class="el_package">eric.ticketsystem.service.impl</a> &gt; <span class="el_source">TicketServiceImpl.java</span></div><h1>TicketServiceImpl.java</h1><pre class="source lang-java linenums">package eric.ticketsystem.service.impl;
+
+import java.util.List;
+
+import eric.ticketsystem.model.Reservation;
+import eric.ticketsystem.model.Seat;
+import eric.ticketsystem.model.SeatHold;
+import eric.ticketsystem.model.SeatStatus;
+import eric.ticketsystem.repository.VenueRepository;
+import eric.ticketsystem.service.TicketService;
+import eric.ticketsystem.utility.Utility;
+
+public class TicketServiceImpl implements TicketService {
+	VenueRepository venuRepository;
+
+<span class="fc" id="L16">	public TicketServiceImpl(VenueRepository venuRepository) {</span>
+<span class="fc" id="L17">		this.venuRepository = venuRepository;</span>
+<span class="fc" id="L18">	}</span>
+
+	public int numSeatsAvailable() {
+<span class="fc" id="L21">		return venuRepository.getNumOfAvailableSeats();</span>
+	}
+
+	public SeatHold findAndHoldSeats(int numSeats, String customerEmail) {
+<span class="fc" id="L25">		SeatHold seatHold = null;</span>
+
+<span class="pc bpc" id="L27" title="1 of 6 branches missed.">		if (numSeats &gt; 0 &amp;&amp; numSeats &lt;= numSeatsAvailable() &amp;&amp; Utility.isValidEmail(customerEmail)) {</span>
+<span class="fc" id="L28">			List&lt;Seat&gt; bestSeats = venuRepository.getBestSeats(numSeats);</span>
+
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">			for (Seat seat : bestSeats) {</span>
+<span class="nc" id="L31">				seat.setStatus(SeatStatus.HELD);</span>
+<span class="nc" id="L32">			}</span>
+<span class="fc" id="L33">			venuRepository.addSeats(bestSeats);</span>
+
+<span class="fc" id="L35">			seatHold = new SeatHold(customerEmail);</span>
+<span class="fc" id="L36">			seatHold.setSeats(bestSeats);</span>
+<span class="fc" id="L37">			seatHold.setDuration(Utility.HOLD_DURATION);</span>
+<span class="fc" id="L38">			venuRepository.saveSeatHold(seatHold);</span>
+		}
+
+<span class="fc" id="L41">		return seatHold;</span>
+	}
+
+	public String reserveSeats(int seatHoldId, String customerEmail) {
+<span class="fc" id="L45">		String code = null;</span>
+<span class="fc" id="L46">		SeatHold seatHold = venuRepository.findSeatHold(seatHoldId);</span>
+
+<span class="fc bfc" id="L48" title="All 4 branches covered.">		if (seatHold != null &amp;&amp; Utility.isValidEmail(customerEmail)</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">				&amp;&amp; customerEmail.equals(seatHold.getCustomerEmail())) {</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">			for (Seat seat : seatHold.getSeats()) {</span>
+<span class="nc" id="L51">				seat.setStatus(SeatStatus.RESERVED);</span>
+<span class="nc" id="L52">			}</span>
+
+<span class="fc" id="L54">			Reservation reservation = new Reservation(seatHold);</span>
+<span class="fc" id="L55">			venuRepository.saveReservation(reservation);</span>
+<span class="fc" id="L56">			code = reservation.getCode();</span>
+		}
+
+<span class="fc" id="L59">		return code;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.3.201901230119</span></div></body></html>
